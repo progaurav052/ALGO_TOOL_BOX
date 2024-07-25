@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Search Guessing Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Guess the Number</h1>
+        <div class="slider-container">
+            <div class="slider-track"></div>
+            <div class="slider-range" id="sliderRange"></div>
+            <div class="slider-handle" id="handleMin"></div>
+            <div class="slider-handle" id="handleMax"></div>
+            
+        </div>
+        <div id="sliderValues">Range: 1 - 100</div>
+        <p id="question">Is your number greater than <span id="currentValue">50</span>?</p>
+        <button id="yesButton">Yes</button>
+        <button id="noButton">No</button>
+        <p id="feedback"></p>
+        <p id="finalGuess" style="display:none;"></p>
+        <button id="restartGame" style="display:none;">Restart Game</button>
+    </div>
+    <script>
+        let min, max, mid;
+        const startRange = parseInt(localStorage.getItem('startRange'));
+        const endRange = parseInt(localStorage.getItem('endRange'));
+
+        // Initialize game
+        min = startRange;
+        max = endRange;
+        mid = Math.floor((min + max) / 2);
+
+        const handleMin = document.getElementById('handleMin');
+        const handleMax = document.getElementById('handleMax');
+        const sliderRange = document.getElementById('sliderRange');
+        const sliderValues = document.getElementById('sliderValues');
+        const currentValue = document.getElementById('currentValue');
+
+        // Function to update handle positions
+        const setHandlePositions = () => {
+            const sliderWidth = document.querySelector('.slider-container').offsetWidth;
+            const minPercent = (min - startRange) / (endRange - startRange) * 100;
+            const maxPercent = (max - startRange) / (endRange - startRange) * 100;
+            handleMin.style.left = `${minPercent}%`;
+            handleMax.style.left = `${maxPercent}%`;
+            sliderRange.style.left = `${minPercent}%`;
+            sliderRange.style.width = `${maxPercent - minPercent}%`;
+            updateSliderValues();
+        }
+
+        // Initialize handles and range
+        setHandlePositions();
+
+        // Functions to adjust range
+        const moveMin = (delta) => {
+            min = Math.max(startRange, min + delta);
+            mid = Math.floor((min + max) / 2);
+            setHandlePositions();
+            currentValue.textContent = mid;
+        }
+
+        const moveMax = (delta) => {
+            max = Math.min(endRange, max + delta);
+            mid = Math.floor((min + max) / 2);
+            setHandlePositions();
+            currentValue.textContent = mid;
+        }
+
+        document.getElementById('yesButton').addEventListener('click', () => {
+            min = mid + 1;
+            updateGame();
+        });
+
+        document.getElementById('noButton').addEventListener('click', () => {
+            max = mid - 1;
+            updateGame();
+        });
+
+        function updateGame() {
+            if (min > max) {
+                document.getElementById('feedback').textContent = 'Congratulations! Your number has been guessed.';
+                document.getElementById('finalGuess').textContent = `The number you guessed was: ${mid}`;
+                document.getElementById('finalGuess').style.display = 'block';
+                document.getElementById('restartGame').style.display = 'block';
+                return;
+            }
+
+            if (min === max) {
+                document.getElementById('feedback').textContent = 'Congratulations! Your number has been guessed.';
+                document.getElementById('finalGuess').textContent = `The number you guessed was: ${min}`;
+                document.getElementById('finalGuess').style.display = 'block';
+                document.getElementById('restartGame').style.display = 'block';
+                return;
+            }
+
+            mid = Math.floor((min + max) / 2);
+            setHandlePositions();
+            document.getElementById('currentValue').textContent = mid;
+        }
+
+        function updateSliderValues() {
+            sliderValues.textContent = `Range: ${min} - ${max}`;
+        }
+
+        document.getElementById('restartGame').addEventListener('click', () => {
+            window.location.href = 'binsrch.html';
+        });
+    </script>
+</body>
+</html>
